@@ -1,0 +1,174 @@
+version: "3"
+services:
+  opensearch1:
+    restart: always
+    image: opensearchproject/opensearch:latest
+    container_name: opensearch-node1
+    hostname: opensearch-node1
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      - "./data1/:/usr/share/opensearch/data/"
+      - "./opensearch.yml:/usr/share/opensearch/config/opensearch.yml"
+      - "./jvm.options:/usr/share/opensearch/config/jvm.options"
+      - "./certs:/usr/share/opensearch/config/certificates:ro"
+    networks:
+      - bubo_op
+    ports:
+      - 9200:9200
+      - 9600:9600
+
+  opensearch2:
+    restart: always
+    image: opensearchproject/opensearch:latest
+    container_name: opensearch-node2
+    hostname: opensearch-node2
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      - "./data2/:/usr/share/opensearch/data/"
+      - "./opensearch.yml:/usr/share/opensearch/config/opensearch.yml"
+      - "./jvm.options:/usr/share/opensearch/config/jvm.options"
+      - "./certs:/usr/share/opensearch/config/certificates:ro"
+    networks:
+      - bubo_op
+
+  opensearch3:
+    restart: always
+    image: opensearchproject/opensearch:latest
+    container_name: opensearch-node3
+    hostname: opensearch-node3
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      - "./data3/:/usr/share/opensearch/data/"
+      - "./opensearch.yml:/usr/share/opensearch/config/opensearch.yml"
+      - "./jvm.options:/usr/share/opensearch/config/jvm.options"
+      - "./certs:/usr/share/opensearch/config/certificates:ro"
+    networks:
+      - bubo_op
+
+  opensearch-dashboards:
+    restart: always
+    image: opensearchproject/opensearch-dashboards:latest
+    environment:
+      OPENSEARCH_HOSTS: '["https://opensearch-node1:9200","https://opensearch-node2:9200","https://opensearch-node3:9200"]'
+      DISABLE_INSTALL_DEMO_CONFIG: "true"
+    ports:
+      - 5601:5601
+    expose:
+      - "5601"
+    networks:
+      - bubo_op
+    deploy:
+      update_config:
+        failure_action: rollback
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 3
+    volumes:
+      - "./certs:/usr/share/opensearch-dashboards/config/certificates:ro"
+      - "./opensearch-dashboards.yml:/usr/share/opensearch-dashboards/config/opensearch_dashboards.yml"
+
+  logstash:
+    restart: always
+    image: opensearchproject/logstash-oss-with-opensearch-output-plugin:latest
+    networks:
+      - bubo_op
+    ports:
+      - 5044:5044
+    expose:
+      - 5044
+    environment:
+      LS_JAVA_OPTS: "-Xmx2g -Xms2g"
+    volumes:
+      - ./pipeline/:/usr/share/logstash/pipeline/
+      - ./logstash/patterns.d:/usr/share/logstash/patterns.d
+      - ./process_ioc.rb:/usr/share/logstash/process_ioc.rb
+    depends_on:
+      -  opensearch1
+
+  memcached:
+    restart: always
+    container_name: memcached
+    build:
+      context: .
+      dockerfile: memcached.dockerfile
+    ports:
+      - 11211:11211
+    expose:
+      - 11211
+    deploy:
+      endpoint_mode: dnsrr
+    networks:
+      - bubo_op
+
+  misp2memcached:
+    restart: always
+    container_name: misp2memcached
+    build:
+      context: .
+      dockerfile: misp.dockerfile
+    networks:
+      - bubo_op
+
+  visualizer:
+    restart: always
+    image: dockersamples/visualizer
+    ports:
+      - "8081:8080"
+    stop_grace_period: 1m30s
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    deploy:
+      placement:
+        constraints: [node.role == manager]      
+
+networks:
+  bubo_op:
+
+volumes:
+  data1:
+    # driver: local
+    # driver_opts:
+    #   type: 'none'
+    #   o: 'bind'
+    #   device: '/usr/share/opensearch/data1'
+  data2:
+    # driver: local
+    # driver_opts:
+    #   type: 'none'
+    #   o: 'bind'
+    #   device: '/usr/share/opensearch/data2'
+  data3:
+    # driver: local
+    # driver_opts:
+    #   type: 'none'
+    #   o: 'bind'
+    #   device: '/usr/share/opensearch/data3'    
+
+  logstash:
+    # driver: local
+    # driver_opts:
+    #   type: 'none'
+    #   o: 'bind'
+    #   device: '/usr/share/logstash'        
+  traefik-certificates:
