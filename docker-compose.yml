@@ -99,6 +99,7 @@ services:
       - 5044
     environment:
       LS_JAVA_OPTS: "-Xmx2g -Xms2g"
+      pipeline.ecs_compatibility: disabled
     volumes:
       - ./pipeline/:/usr/share/logstash/pipeline/
       - ./logstash/patterns.d:/usr/share/logstash/patterns.d
