@@ -14,7 +14,7 @@ RUN pip install -r /MISP2memcached/requirements.txt
 RUN cp config.yml.example config.yml
 
 RUN sed -i 's,url: https://127.0.0.1,url: https://misp.bubo-cybersec.com,g' config.yml ; \
-    sed -i 's/PUT_MISP_TOKEN_HERE/******/' config.yml ; \
+    sed -i 's/PUT_MISP_TOKEN_HERE/ZzP3Vq39Tugi5bXos38EyxCGfIld7QKcfboNnPBT/' config.yml ; \
     sed -i 's/ignore_cert_errors: false/ignore_cert_errors: true/' config.yml ; \
     sed -i 's/host: 127.0.0.1/host: memcached/' config.yml
 
