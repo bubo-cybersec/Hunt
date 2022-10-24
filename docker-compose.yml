@@ -22,6 +22,8 @@ services:
     ports:
       - 9200:9200
       - 9600:9600
+    environment:
+      node.roles: 'master'
 
   opensearch2:
     restart: always
@@ -42,6 +44,9 @@ services:
       - "./certs:/usr/share/opensearch/config/certificates:ro"
     networks:
       - bubo_op
+    environment: 
+      node.roles: 'ingest, data'
+      node.attr.temp: hot
 
   opensearch3:
     restart: always
@@ -62,6 +67,9 @@ services:
       - "./certs:/usr/share/opensearch/config/certificates:ro"
     networks:
       - bubo_op
+    environment: 
+      node.roles: 'data'
+      node.attr.temp: warm
 
   opensearch-dashboards:
     restart: always
