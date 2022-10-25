@@ -102,7 +102,7 @@ services:
     expose:
       - 5044
     environment:
-      LS_JAVA_OPTS: "-Xmx2g -Xms2g"
+      LS_JAVA_OPTS: "-Xmx4g -Xms4g"
       pipeline.ecs_compatibility: disabled
     volumes:
       - ./pipeline/:/usr/share/logstash/pipeline/
