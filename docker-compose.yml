@@ -17,6 +17,7 @@ services:
       - "./opensearch.yml:/usr/share/opensearch/config/opensearch.yml"
       - "./jvm.options:/usr/share/opensearch/config/jvm.options"
       - "./certs:/usr/share/opensearch/config/certificates:ro"
+      - "./internal_user.yml:/config/opensearch-security/internal_users.yml"
     networks:
       - bubo_op
     ports:
@@ -40,10 +41,9 @@ services:
       - "./opensearch.yml:/usr/share/opensearch/config/opensearch.yml"
       - "./jvm.options:/usr/share/opensearch/config/jvm.options"
       - "./certs:/usr/share/opensearch/config/certificates:ro"
+      - "./internal_user.yml:/config/opensearch-security/internal_users.yml"
     networks:
       - bubo_op
-    environment: 
-      node.attr.temp: hot
 
   opensearch3:
     restart: always
@@ -62,10 +62,9 @@ services:
       - "./opensearch.yml:/usr/share/opensearch/config/opensearch.yml"
       - "./jvm.options:/usr/share/opensearch/config/jvm.options"
       - "./certs:/usr/share/opensearch/config/certificates:ro"
+      - "./internal_user.yml:/config/opensearch-security/internal_users.yml"
     networks:
       - bubo_op
-    environment: 
-      node.attr.temp: warm
 
   opensearch-dashboards:
     restart: always
@@ -105,9 +104,8 @@ services:
       LS_JAVA_OPTS: -Xmx4g -Xms4g
       pipeline.ecs_compatibility: disabled
     volumes:
-      - ./pipeline/:/usr/share/logstash/pipeline/
-      - ./logstash/patterns.d:/usr/share/logstash/patterns.d
-      - ./process_ioc.rb:/usr/share/logstash/process_ioc.rb
+      - "./logstash_pipeline/:/usr/share/logstash/pipeline/"
+      - "./patterns/:/usr/share/logstash/patterns"
     depends_on:
       -  opensearch1
 
@@ -152,28 +150,7 @@ networks:
 
 volumes:
   data1:
-    # driver: local
-    # driver_opts:
-    #   type: 'none'
-    #   o: 'bind'
-    #   device: '/usr/share/opensearch/data1'
   data2:
-    # driver: local
-    # driver_opts:
-    #   type: 'none'
-    #   o: 'bind'
-    #   device: '/usr/share/opensearch/data2'
-  data3:
-    # driver: local
-    # driver_opts:
-    #   type: 'none'
-    #   o: 'bind'
-    #   device: '/usr/share/opensearch/data3'    
-
-  logstash:
-    # driver: local
-    # driver_opts:
-    #   type: 'none'
-    #   o: 'bind'
-    #   device: '/usr/share/logstash'        
+  data3:   
+  logstash:      
   traefik-certificates:
