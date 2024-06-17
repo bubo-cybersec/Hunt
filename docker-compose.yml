@@ -17,7 +17,7 @@ services:
       - "./opensearch.yml:/usr/share/opensearch/config/opensearch.yml"
       - "./jvm.options:/usr/share/opensearch/config/jvm.options"
       - "./certs:/usr/share/opensearch/config/certificates:ro"
-      - "./internal_user.yml:/config/opensearch-security/internal_users.yml"
+      - "./internal_user.yml:/usr/share/opensearch/config/opensearch-security/internal_users.yml"
     networks:
       - bubo_op
     ports:
@@ -41,7 +41,7 @@ services:
       - "./opensearch.yml:/usr/share/opensearch/config/opensearch.yml"
       - "./jvm.options:/usr/share/opensearch/config/jvm.options"
       - "./certs:/usr/share/opensearch/config/certificates:ro"
-      - "./internal_user.yml:/config/opensearch-security/internal_users.yml"
+      - "./internal_user.yml:/usr/share/opensearch/config/opensearch-security/internal_users.yml"
     networks:
       - bubo_op
 
@@ -62,7 +62,7 @@ services:
       - "./opensearch.yml:/usr/share/opensearch/config/opensearch.yml"
       - "./jvm.options:/usr/share/opensearch/config/jvm.options"
       - "./certs:/usr/share/opensearch/config/certificates:ro"
-      - "./internal_user.yml:/config/opensearch-security/internal_users.yml"
+      - "./internal_user.yml:/usr/share/opensearch/config/opensearch-security/internal_users.yml"
     networks:
       - bubo_op
 
